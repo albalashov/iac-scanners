@@ -1,7 +1,15 @@
-on: [push]
+name: Terrascan
+on:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
 
 jobs:
   terrascan_job:
+    permissions:
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
     runs-on: ubuntu-latest
     name: terrascan-action
     steps:

@@ -1,0 +1,61 @@
+name: "Prepare CDK template"
+description: "Prepare CDK template"
+inputs:
+  nvmrc_pwd:
+    description: "nvmrc file location"
+    required: false
+    default: "./.nvmrc"
+  working_directory:
+    type: string
+    required: false
+    default: "./"
+  legacy_peer_deps:
+    required: false
+  contentful_preview_token:
+    type: string
+    required: false
+  contentful_publish_token:
+    type: string
+    required: false
+  rollbar_token:
+    type: string
+    required: false
+  github_environment:
+    type: string
+    required: false
+  skip_next_paths:
+    type: boolean
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "v20.9.0"
+
+    - name: Install CDK
+      run: sudo npm install -g aws-cdk
+      shell: bash
+
+    - name: Set up package and install
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      env:
+        NEXT_PUBLIC_ROLLBAR_TOKEN: ${{ inputs.rollbar_token }}
+        CONTENTFUL_PREVIEW_TOKEN: ${{ inputs.contentful_preview_token }}
+        CONTENTFUL_PUBLISH_TOKEN: ${{ inputs.contentful_publish_token }}
+        CONTENTFUL_ENVIRONMENT: master
+        ENV_NAME: ${{ inputs.github_environment }}
+        SKIP_NEXT_PATHS: ${{ inputs.skip_next_paths }}
+      run: |
+          npm ci --no-audit
+          npm run build
+
+    - name: Synth CF template
+      shell: bash
+      env:
+        ENV_NAME: ${{ inputs.deployment_env }}
+      working-directory: ${{ inputs.working_directory }}
+      run: cdk deploy --all --require-approval=never
