@@ -34,7 +34,7 @@ jobs:
           # This will add both a CLI output to the console and create a results.sarif file
           output_format: cli,sarif
           output_file_path: console,checkov-results.sarif
-          check: HIGH,CRITICAL
+          # check: HIGH,CRITICAL
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
