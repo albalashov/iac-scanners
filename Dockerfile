@@ -1,5 +1,5 @@
 FROM node:alpine
-ENV AWS_SECRET_KEY=123123123123
+ENV NPM_TOKEN=123123123123
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
