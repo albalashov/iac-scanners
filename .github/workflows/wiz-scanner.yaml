@@ -36,12 +36,12 @@ jobs:
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
     - name: Run wiz CLI IaC scan
-      run: ./wizcli iac scan --name "$SCAN_NAME" --path $SCAN_PATH --policy "$POLICY" -o wiz-results.json,sarif
+      run: ./wizcli iac scan --name "$SCAN_NAME" --path $SCAN_PATH --policy "$POLICY" -o wiz-results.sarif,sarif
       env:
         SCAN_NAME: "IaC scan: repo: ${{github.repository}}, sha: ${{github.sha}}"
 
     - name: Upload Wiz scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v3
-      if: always()
+      if: ${{ hashFiles('wiz-results.sarif') }}
       with:
-        sarif_file: 'wiz-results.json'
+        sarif_file: 'wiz-results.sarif'
